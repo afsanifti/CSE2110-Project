@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <vector>
 
 using namespace std;
 
@@ -38,13 +39,37 @@ public:
     void setStock(int stock) { this->stock = stock; }
 };
 
+class ProductSystem {
+private:
+    static vector<Product> products;
+
+public:
+    static void addProducts(string name, float price, int stock) {
+        products.push_back(Product(name, price, stock));
+    }
+
+    static void updatePrice(int index, float newPrice) {
+        // TODO: add limits for index
+        products[index].setPrice(newPrice);
+    }
+};
+
 class Admin {
 private:
     const string admin_username = "Afsan";
-    const int admin_password = 2309012;
+    const string admin_password = "2309012";
     bool isLoggedIn;
 public:
     Admin() : isLoggedIn(false) {}
+
+    bool login(string username, string password) {
+        if (admin_username == username) {
+            isLoggedIn = true;
+            return true;
+        } else {
+            return false;
+        }
+    }
 };
 
 class Customer {};
@@ -68,7 +93,6 @@ public:
 };
 
 int main() {
-    Decoration deco;
-    deco.productTable();
+    
     return 0;
 }
