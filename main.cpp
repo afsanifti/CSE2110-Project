@@ -11,7 +11,6 @@
 
 using namespace std;
 
-
 class Product {
 private:
     string name;
@@ -32,14 +31,16 @@ public:
     void setStock(int stock) { this->stock = stock; }
 };
 
-class ProductSystem {
+class ProductManager {
 private:
     static vector<Product> products;
 
 public:
-    static void addProducts(string name, float price, int stock) {
+    static void addProduct(string name, float price, int stock) {
         products.push_back(Product(name, price, stock));
     }
+
+    static void removeProduct();
 
     static void updatePrice(int index, float newPrice) {
         // TODO: add limits for index
@@ -47,8 +48,13 @@ public:
     }
 
     static void updateStock(int index, int newStock) {
+        // TODO: add limits
         products[index].setStock(newStock);
-    } 
+    }
+
+    static vector<Product> getProducts() {
+        return products;
+    }
 };
 
 /**
@@ -78,15 +84,15 @@ public:
     }
 
     void addProduct(string name, float price, int stock) {
-        ProductSystem::addProducts(name, price, stock);
+        ProductManager::addProduct(name, price, stock);
     }
 
     void updatePrice(int index, float newPrice) {
-        ProductSystem::updatePrice(index, newPrice);
+        ProductManager::updatePrice(index, newPrice);
     }
 
     void updateStock(int index, int newStock) {
-        ProductSystem::updateStock(index, newStock);
+        ProductManager::updateStock(index, newStock);
     }
 };
 
@@ -94,16 +100,18 @@ class Customer {};
 
 class Decoration {
 public:
-    void productTable() {
+    static void productTable() {
         cout << "+------+-----------------+---------+---------+ \n";
         cout << "| ID   | Product Name    | Stock   | Price   | \n";
         cout << "+------+-----------------+---------+---------+ \n";
 
-        for (int i = 0; i < 10; i++) {
+        vector<Product> products = ProductManager::getProducts();
+
+        for (int i = 0; i < products.size(); i++) {
             cout << "| " << setw(5) << left << i + 1
-                 << "| " << setw(16) << left << "Name"
-                 << "| " << setw(8) << left << "Stock"
-                 << "| " << setw(8) << left << "Price" << "|" << endl;
+                 << "| " << setw(16) << left << products[i].getName()
+                 << "| " << setw(8) << left << products[i].getStock()
+                 << "| " << setw(8) << left << products[i].getPrice() << "|" << endl;
         }
 
         cout << "+------+-----------------+---------+---------+ \n";
