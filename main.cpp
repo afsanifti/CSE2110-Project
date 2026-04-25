@@ -36,11 +36,18 @@ private:
     static vector<Product> products;
 
 public:
+    // Testing
+    ProductManager() {
+        addProduct("Mango", 12.00, 40);
+    }
+
     static void addProduct(string name, float price, int stock) {
         products.push_back(Product(name, price, stock));
     }
 
-    static void removeProduct();
+    static void removeProduct(int index) {
+        products.erase(products.begin() + index);
+    }
 
     static void updatePrice(int index, float newPrice) {
         // TODO: add limits for index
@@ -56,6 +63,8 @@ public:
         return products;
     }
 };
+
+vector<Product> ProductManager::products;
 
 /**
  * Things admin can do:
@@ -85,6 +94,10 @@ public:
 
     void addProduct(string name, float price, int stock) {
         ProductManager::addProduct(name, price, stock);
+    }
+
+    void removeProduct(int index) {
+        ProductManager::removeProduct(index);
     }
 
     void updatePrice(int index, float newPrice) {
@@ -119,6 +132,10 @@ public:
 };
 
 int main() {
-    
+    ProductManager();
+    Decoration::productTable();
+    Admin admin;
+    admin.addProduct("Banana", 10.12, 30);
+    Decoration::productTable();
     return 0;
 }
