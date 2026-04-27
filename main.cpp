@@ -35,6 +35,7 @@ public:
 class ProductManager {
 private:
     static vector<Product> products;
+    static vector<Product> cart;
 
 public:
     // Testing
@@ -42,6 +43,7 @@ public:
         addProduct("Mango", 12.00, 40);
     }
 
+    // ----------------- FUNCTIONS FOR ADMIN --------------------
     static void addProduct(string name, float price, int stock) {
         products.push_back(Product(name, price, stock));
     }
@@ -55,8 +57,9 @@ public:
     }
 
     static void updatePrice(int index, float newPrice) {
-        // TODO: add limits for index
-        products[index].setPrice(newPrice);
+        if (newPrice > 0) {
+            products[index].setPrice(newPrice);
+        }
     }
 
     static void addStock(int index, int newStock) {
@@ -73,6 +76,29 @@ public:
         }
     }
 
+    // ----------------- FUNCTIONS FOR CUSTOMER ----------------
+    static void addProductToCart(int index, int quantity) {
+        string name = products[index].getName();
+        float price = products[index].getPrice();
+        int currentStock = products[index].getStock();
+
+        if (quantity <= currentStock) {
+            cart.push_back(Product(name, price, quantity));
+            products[index].setStock(currentStock - quantity);
+        } else {
+            cout << "\nInsufficient Stock. Try again\n";
+        }
+    }
+
+    static void removeProductFromCart(int index) {
+        if (index > 0) {
+            cart.erase(products.begin() + index - 1);
+        } else {
+            cout << "\nIndex doesn't exist\n";
+        }
+    }
+
+    // ---------------- MISCELLANEOUS FUNCTIONS ----------------
     static vector<Product> getProducts() {
         return products;
     }
@@ -83,6 +109,7 @@ public:
 };
 
 vector<Product> ProductManager::products;
+vector<Product> ProductManager::cart;
 
 /**
  * Things admin can do:
@@ -127,7 +154,30 @@ public:
     }
 };
 
-class Customer {};
+/**
+ * Things customers can do:
+ *      1. See list of products
+ *      2. Add products to their cart
+ *      3. Remove products from their cart
+ *      4. Get money receipt
+ */
+
+class Customer {
+public:
+    void addToCart(int index, int quantity) {
+        ProductManager::addProductToCart(index, quantity);
+    }
+
+    void removeFromCart(int index) {
+        ProductManager::removeProductFromCart(index);
+    }
+
+    // void findProduct() {
+
+    // }
+    // void viewCart();
+};
+
 
 class Decoration {
 public:
