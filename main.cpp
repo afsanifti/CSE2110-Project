@@ -16,6 +16,7 @@ private:
     string name;
     float price;
     int stock;
+    
 public:
     Product(string name, float price, int stock) {
         this->name = name;
@@ -46,7 +47,11 @@ public:
     }
 
     static void removeProduct(int index) {
-        products.erase(products.begin() + index);
+        if (index > 0) {
+            products.erase(products.begin() + index - 1);
+        } else {
+            cout << "\nIndex doesn't exist\n";
+        }
     }
 
     static void updatePrice(int index, float newPrice) {
@@ -54,13 +59,26 @@ public:
         products[index].setPrice(newPrice);
     }
 
-    static void updateStock(int index, int newStock) {
-        // TODO: add limits
-        products[index].setStock(newStock);
+    static void addStock(int index, int newStock) {
+        int currentStock = products[index].getStock();
+        products[index].setStock(currentStock + newStock);
+    }
+
+    static void removeStock(int index, int newStock) {
+        int currentStock = products[index].getStock();
+        if (currentStock >= newStock){
+            products[index].setStock(currentStock - newStock);
+        } else {
+            products[index].setStock(0);
+        }
     }
 
     static vector<Product> getProducts() {
         return products;
+    }
+
+    static Product getProductWithIndex(int index) {
+        return products.at(index);
     }
 };
 
@@ -104,8 +122,8 @@ public:
         ProductManager::updatePrice(index, newPrice);
     }
 
-    void updateStock(int index, int newStock) {
-        ProductManager::updateStock(index, newStock);
+    void addStock(int index, int newStock) {
+        ProductManager::addStock(index, newStock);
     }
 };
 
@@ -132,10 +150,15 @@ public:
 };
 
 int main() {
+    // testing
     ProductManager();
     Decoration::productTable();
     Admin admin;
     admin.addProduct("Banana", 10.12, 30);
+    Decoration::productTable();
+
+    cout << ProductManager::getProductWithIndex(0).getName() << endl;
+    admin.removeProduct(2);
     Decoration::productTable();
     return 0;
 }
