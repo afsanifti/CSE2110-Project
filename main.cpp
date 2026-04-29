@@ -134,24 +134,18 @@ private:
 	bool isLoggedIn;
 
 public:
-	Admin(string username, string password) {
-		if (admin_username == username && admin_password == password) {
-			isLoggedIn = true;
-		}
-		else {
-			isLoggedIn = false;
-			cout << "Invalid Credential" << endl;
-		}
+	Admin() {
+		isLoggedIn = false;
 	}
 
-	// bool login(string username, string password) {
-	//     if (admin_username == username && admin_password == password) {
-	//         isLoggedIn = true;
-	//         return true;
-	//     } else {
-	//         return false;
-	//     }
-	// }
+	bool login(string username, string password) {
+	    if (admin_username == username && admin_password == password) {
+	        isLoggedIn = true;
+	        return true;
+	    } else {
+	        return false;
+	    }
+	}
 
 	void addProduct(string name, float price, int stock) {
 		if (isLoggedIn == true){
@@ -262,6 +256,35 @@ int main() {
 	cin >> profile;
 
 	if (profile == 1) {
+		string u;
+		string p;
+
+		cout << "| Enter Username                      |\n";
+		cout << "+---~> ";
+		cin >> u;
+
+		cout << "| Enter Password                      |\n";
+		cout << "+---~> ";
+		cin >> p;
+		cout << endl << endl;
+		
+		Admin admin;
+		
+		bool credential = admin.login(u, p);
+		
+		if (credential == true) {
+			Decoration::productTable();
+
+			int opt;
+			cout << endl;
+			cout << "| 1. Add Product                       |\n"
+					"| 2. Remove Product                    |\n"
+					"| 3. Edit Stock                        |\n"
+					"| 4. Update Price                      |\n"
+					"| 0. Go back <--- "
+					"+---~> ";
+			cin >> opt;
+		}
 	}
 	else if (profile == 2) {
 	}
