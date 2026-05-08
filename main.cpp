@@ -37,19 +37,23 @@ private:
 	static vector<Product> products;
 	static vector<Product> cart;
 
-public:
-	// Testing
-	ProductManager() {
-		addProduct("Mango", 12.00, 40);
+	ProductManager() {}
+
+	static bool initialized;
+	static bool initializeProducts() {
+		addProduct("Choclate Cake", 12.00, 40);
+		addProduct("Mountain Dew", 25, 50);
+		addProduct("Chips", 15, 100);
 	}
 
+public:
 	// ----------------- FUNCTIONS FOR ADMIN --------------------
 	static void addProduct(string name, float price, int stock) {
 		products.push_back(Product(name, price, stock));
 	}
 
 	static void removeProduct(int index) {
-		if (index > 0) {
+		if (index > 0 && index <= products.size()) {
 			products.erase(products.begin() + index - 1);
 		}
 		else {
@@ -58,17 +62,21 @@ public:
 	}
 
 	static void updatePrice(int index, float newPrice) {
+		index = index - 1;
+
 		if (newPrice > 0) {
 			products[index].setPrice(newPrice);
 		}
 	}
 
 	static void addStock(int index, int newStock) {
+		index = index - 1;
 		int currentStock = products[index].getStock();
 		products[index].setStock(currentStock + newStock);
 	}
 
 	static void removeStock(int index, int newStock) {
+		index = index - 1;
 		int currentStock = products[index].getStock();
 		if (currentStock >= newStock) {
 			products[index].setStock(currentStock - newStock);
@@ -80,6 +88,7 @@ public:
 
 	// ----------------- FUNCTIONS FOR CUSTOMER ----------------
 	static void addProductToCart(int index, int quantity) {
+		index  = index - 1;
 		string name = products[index].getName();
 		float price = products[index].getPrice();
 		int currentStock = products[index].getStock();
@@ -95,7 +104,7 @@ public:
 
 	static void removeProductFromCart(int index) {
 		if (index > 0) {
-			cart.erase(products.begin() + index - 1);
+			cart.erase(cart.begin() + index - 1);
 		}
 		else {
 			cout << "\nIndex doesn't exist\n";
@@ -118,6 +127,7 @@ public:
 
 vector<Product> ProductManager::products;
 vector<Product> ProductManager::cart;
+bool ProductManager::initialized = ProductManager::initializeProducts();
 
 /**
  * Things admin can do:
@@ -148,29 +158,32 @@ public:
 	}
 
 	void addProduct(string name, float price, int stock) {
-		if (isLoggedIn == true){
+		if (isLoggedIn) {
 			ProductManager::addProduct(name, price, stock);
 		}
 	}
 
 	void removeProduct(int index) {
-		if (isLoggedIn == true)
-		{
+		if (isLoggedIn) {
 			ProductManager::removeProduct(index);
 		}
 	}
 
 	void updatePrice(int index, float newPrice) {
-		if (isLoggedIn == true)
-		{
+		if (isLoggedIn) {
 			ProductManager::updatePrice(index, newPrice);
 		}
 	}
 
 	void addStock(int index, int newStock) {
-		if (isLoggedIn == true)
-		{
+		if (isLoggedIn) {
 			ProductManager::addStock(index, newStock);
+		}
+	}
+
+	void removeStock(int index, int newStock) {
+		if (isLoggedIn) {
+			ProductManager::removeStock(index, newStock);
 		}
 	}
 };
@@ -199,7 +212,7 @@ public:
 	// void viewCart();
 };
 
-class Decoration {
+class Table {
 public:
 	static void productTable() {
 		cout << "+------+-----------------+---------+---------+ \n";
@@ -234,7 +247,7 @@ public:
 				 << "| " << setw(11) << left << cart[i].getStock()
 				 << "| " << setw(8) << left << cart[i].getPrice() << "|" << endl;
 
-			subtotal += cart[i].getPrice();
+			subtotal += cart[i].getPrice() * cart[i].getStock();
 		}
 
 		cout << "+------+-----------------+------------+---------+ \n";
@@ -245,50 +258,205 @@ public:
 	}
 };
 
+
 int main() {
+	system("cls");
 	int profile;
 
-	cout << "+---------Choose your profile---------+\n";
-	cout << "| 1. Admin                            |\n";
-	cout << "| 2. Customer                         |\n";
-	cout << "+-------------------------------------+\n";
-	cout << "+---~> ";
-	cin >> profile;
-
-	if (profile == 1) {
-		string u;
-		string p;
-
-		cout << "| Enter Username                      |\n";
+	while(true) {
+		cout << "+---------Choose your profile---------+\n";
+		cout << "| 1. Admin                            |\n";
+		cout << "| 2. Customer                         |\n";
+		cout << "+-------------------------------------+\n";
 		cout << "+---~> ";
-		cin >> u;
+		cin >> profile;
 
-		cout << "| Enter Password                      |\n";
-		cout << "+---~> ";
-		cin >> p;
-		cout << endl << endl;
-		
-		Admin admin;
-		
-		bool credential = admin.login(u, p);
-		
-		if (credential == true) {
-			Decoration::productTable();
+		if (profile == 1) {
+			string u;
+			string p;
 
-			int opt;
-			cout << endl;
-			cout << "| 1. Add Product                       |\n"
-					"| 2. Remove Product                    |\n"
-					"| 3. Edit Stock                        |\n"
-					"| 4. Update Price                      |\n"
-					"| 0. Go back <--- "
-					"+---~> ";
-			cin >> opt;
+			cout << "| Enter Username                      |\n";
+			cout << "+---~> ";
+			cin >> u;
+
+			cout << "| Enter Password                      |\n";
+			cout << "+---~> ";
+			cin >> p;
+			cout << endl << endl;
+			
+			Admin admin;
+			
+			bool credential = admin.login(u, p);
+			
+			system("cls");
+			while(true) {
+				bool exit = false;
+				if (credential == true) {
+
+					Table::productTable();
+
+					int opt;
+					cout << endl;
+					cout << "| 1. Add Product                             |\n"
+							"| 2. Remove Product                          |\n"
+							"| 3. Add Stock                               |\n"
+							"| 4. Remove Stock                            |\n"
+							"| 5. Update Price                            |\n"
+							"| 0. Go back <---                            |\n"
+							"+---~> ";
+					cin >> opt;
+
+					while (true) {
+						if (opt == 1) {
+							system("cls");
+
+							string name;
+							float price;
+							int stock;
+
+							cout << "| Enter Name                         \n";
+							cout << "+---~> ";
+							getline(cin >> ws, name);
+							cout << "| Enter Price                        \n";
+							cout << "+---~> ";
+							cin >> price; 
+							cout << "| Enter Stock                        \n";
+							cout << "+---~> ";
+							cin >> stock; 
+
+							admin.addProduct(name, price, stock);
+							break;
+						
+						} else if (opt == 2) {
+							int indx;
+							cout << "| Enter Product Numner:               \n";
+							cout << "+---~> ";
+							cin >> indx;
+							
+							admin.removeProduct(indx);
+							break;
+
+						} else if (opt == 3) {
+							int indx, stock;
+							cout << "| Enter Product Numner:               \n";
+							cout << "+---~> ";
+							cin >> indx;
+
+							cout << "| Enter New Stock Number:             \n";
+							cout << "+---~> ";
+							cin >> stock;
+
+							admin.addStock(indx, stock);
+							break;
+
+						} else if (opt == 4) {
+							int indx, stock;
+							cout << "| Enter Product Numner:               \n";
+							cout << "+---~> ";
+							cin >> indx;
+
+							cout << "| Enter New Stock Number:             \n";
+							cout << "+---~> ";
+							cin >> stock;
+
+							admin.removeStock(indx, stock);
+							break;
+
+						} else if (opt == 5) {
+							int indx;
+							float price;
+							
+							cout << "| Enter Product Numner:               \n";
+							cout << "+---~> ";
+							cin >> indx;
+
+							cout << "| Enter New Price:                    \n";
+							cout << "+---~> ";
+							cin >> price;
+
+							admin.updatePrice(indx, price);
+							break;
+
+						} else if (opt == 0) {
+							exit = true;
+							break;
+						} else {
+							cout << "\nWrong Input.";
+							break;
+						}
+					}
+
+					system("cls");
+				}
+
+				if (exit) { break; }
+			}
+		} else if (profile == 2) {
+			Customer customer;
+
+			bool exit = false;
+
+			while(true) {
+				Table::productTable();
+
+				int opt;
+
+				cout << "| 1. Add Product to Cart                     |\n"
+						"| 2. Remove Product from Cart                |\n"				
+						"| 3. See Cart                                |\n"
+						"| 0. Go back <---                            |\n"
+						"+---~> ";
+				cin >> opt;
+				
+				while(true) {
+					if (opt == 1) {
+						int index;
+						int quantity;
+
+						cout << "| Enter Product Number:                  \n";
+						cout << "+---~> ";
+						cin >> index;
+
+						cout << "| Enter Quanntity of Product:            \n";
+						cout << "+---~> ";
+						cin >> quantity;
+
+						customer.addToCart(index, quantity);
+						break;
+
+					} else if (opt == 2) {
+						int index;
+
+						cout << "| Enter Product Number:                  \n";
+						cout << "+---~> ";
+						cin >> index;
+
+						customer.removeFromCart(index);
+						break;
+
+					} else if (opt == 3) {
+						Table::cartTable();
+						break;
+
+					} else if (opt == 0) {
+						exit = true;
+						break;
+
+					} else {
+						cout << "\nWrong Input";
+						break;
+					}
+
+					
+					system("cls");
+				}
+				if (exit) { break; }
+			}
+		} else {
+
 		}
-	}
-	else if (profile == 2) {
-	}
-	else {
-	}
+
+	} 
+
 	return 0;
 }
